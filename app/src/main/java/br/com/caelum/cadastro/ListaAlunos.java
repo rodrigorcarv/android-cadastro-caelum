@@ -1,13 +1,19 @@
-package cadastro.caelum.com.br.cadastrocaelum;
+package br.com.caelum.cadastro;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import cadastro.caelum.com.br.cadastrocaelum.R;
 
 public class ListaAlunos extends Activity {
 
@@ -51,4 +57,29 @@ public class ListaAlunos extends Activity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.listagem_alunos, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int itemClicado = item.getItemId();
+
+        switch (itemClicado) {
+
+            case R.id.novo:
+
+                Intent irParaFormulario = new Intent(this, Formulario.class);
+                startActivity(irParaFormulario);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
