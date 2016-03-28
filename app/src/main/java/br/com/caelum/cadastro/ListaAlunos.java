@@ -13,24 +13,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import cadastro.caelum.com.br.cadastrocaelum.R;
+import java.util.List;
+
+import br.com.caelum.cadastro.dao.AlunoDao;
+import br.com.caelum.cadastro.modelo.Aluno;
 
 public class ListaAlunos extends Activity {
+
+    private ListView lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.listagem_alunos);
 
-        String [] nomes = {"Ana", "Jose", "Felipe"};
-
-        int layout = android.R.layout.simple_list_item_1;
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,layout, nomes);
-
-        ListView lista = (ListView) findViewById(R.id.lista);
-
-        lista.setAdapter(adapter);
+        lista = (ListView) findViewById(R.id.lista);
 
         lista.setOnItemClickListener(new OnItemClickListener() {
 
@@ -52,8 +49,23 @@ public class ListaAlunos extends Activity {
                 return true;
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        AlunoDao alunoDao = new AlunoDao(this);
+        List<Aluno>  alunos = alunoDao.getLista();
+        alunoDao.close();
+
+        int layout = android.R.layout.simple_list_item_1;
+
+        ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(this,layout, alunos);
+
+        lista = (ListView) findViewById(R.id.lista);
+
+        lista.setAdapter(adapter);
 
     }
 

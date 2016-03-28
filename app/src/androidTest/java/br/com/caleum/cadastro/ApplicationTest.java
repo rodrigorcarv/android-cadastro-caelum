@@ -1,4 +1,4 @@
-package cadastro.caelum.com.br.cadastrocaelum;
+package br.com.caelum.cadastro;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
