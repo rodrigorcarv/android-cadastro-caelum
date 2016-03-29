@@ -3,6 +3,7 @@ package br.com.caelum.cadastro;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.text.Normalizer;
 import java.util.List;
 
 import br.com.caelum.cadastro.dao.AlunoDao;
@@ -21,6 +23,7 @@ import br.com.caelum.cadastro.modelo.Aluno;
 public class ListaAlunos extends Activity {
 
     private ListView lista;
+    private Aluno aluno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +32,21 @@ public class ListaAlunos extends Activity {
 
         lista = (ListView) findViewById(R.id.lista);
 
+        registerForContextMenu(lista);
+
         lista.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int posicao, long id) {
 
-                Toast.makeText(ListaAlunos.this, "Clique na posicao" + posicao, Toast.LENGTH_SHORT).show();
+                Aluno alunoClicado = (Aluno) adapter.getItemAtPosition(posicao);
+
+                Intent irParaFormulario = new Intent(ListaAlunos.this, Formulario.class);
+                irParaFormulario.putExtra("alunoSelecionado", alunoClicado );
+
+                startActivity(irParaFormulario);
+
+                //Toast.makeText(ListaAlunos.this, "Clique na posicao" + posicao, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -43,30 +55,59 @@ public class ListaAlunos extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View view, int posicao, long id) {
 
-                Toast.makeText(ListaAlunos.this, "Clique longo em " + adapter.getItemIdAtPosition(posicao), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ListaAlunos.this, "Clique longo em " + adapter.getItemIdAtPosition(posicao), Toast.LENGTH_SHORT).show();
+                aluno = (Aluno) adapter.getItemAtPosition(posicao);
 
-
-                return true;
+                return false;
             }
         });
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        menu.add("Ligar");
+        menu.add("Enviar SMS");
+        menu.add("Navegar no site");
+        MenuItem deletar = menu.add("Deletar");
+        deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                AlunoDao alunoDao = new AlunoDao(ListaAlunos.this);
+                alunoDao.deletar(aluno);
+                alunoDao.close();
+
+                carregaLista();
+
+                return false;
+            }
+        });
+
+        menu.add("Ver no mapa");
+        menu.add("Enviar e-mail");
+
+        super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        carregaLista();
+    }
+
+    private void carregaLista() {
         AlunoDao alunoDao = new AlunoDao(this);
-        List<Aluno>  alunos = alunoDao.getLista();
+        List<Aluno> alunos = alunoDao.getLista();
         alunoDao.close();
 
         int layout = android.R.layout.simple_list_item_1;
 
         ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(this,layout, alunos);
 
-        lista = (ListView) findViewById(R.id.lista);
-
         lista.setAdapter(adapter);
-
     }
 
     @Override

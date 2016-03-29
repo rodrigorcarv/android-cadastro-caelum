@@ -18,6 +18,7 @@ public class FormularioHelper {
 
     public FormularioHelper(Formulario formulario) {
 
+
         editNome = (EditText) formulario.findViewById(R.id.nome);
         editSite = (EditText) formulario.findViewById(R.id.site);
         editTelefone = (EditText) formulario.findViewById(R.id.telefone);
@@ -41,4 +42,12 @@ public class FormularioHelper {
         return editText.getText().toString();
     }
 
+    public void colocaAlunoFormulario(Aluno aluno) {
+
+        editNome.setText(aluno.getNome());
+        editSite.setText(aluno.getSite());
+        editTelefone.setText(aluno.getTelefone());
+        editEndereco.setText(aluno.getEndereco());
+        rantingNota.setRating(aluno.getNota().floatValue());
+    }
 }

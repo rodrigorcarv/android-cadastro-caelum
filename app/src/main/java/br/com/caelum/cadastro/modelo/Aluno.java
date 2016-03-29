@@ -1,9 +1,11 @@
 package br.com.caelum.cadastro.modelo;
 
+import java.io.Serializable;
+
 /**
  * Created by rodrigo on 22/03/16.
  */
-public class Aluno {
+public class Aluno implements Serializable{
 
     private Long id;
     private String nome;
