@@ -2,6 +2,7 @@ package br.com.caelum.cadastro;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -12,9 +13,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.text.Normalizer;
 import java.util.List;
 
 import br.com.caelum.cadastro.dao.AlunoDao;
@@ -32,6 +31,7 @@ public class ListaAlunos extends Activity {
 
         lista = (ListView) findViewById(R.id.lista);
 
+        //Chamando evento de click longo na lista
         registerForContextMenu(lista);
 
         lista.setOnItemClickListener(new OnItemClickListener() {
@@ -39,10 +39,11 @@ public class ListaAlunos extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int posicao, long id) {
 
+                //Guardando aluno selecionado
                 Aluno alunoClicado = (Aluno) adapter.getItemAtPosition(posicao);
 
                 Intent irParaFormulario = new Intent(ListaAlunos.this, Formulario.class);
-                irParaFormulario.putExtra("alunoSelecionado", alunoClicado );
+                irParaFormulario.putExtra("alunoSelecionado", alunoClicado);
 
                 startActivity(irParaFormulario);
 
@@ -63,14 +64,50 @@ public class ListaAlunos extends Activity {
         });
     }
 
-
+    //Click longo do Android
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
-        menu.add("Ligar");
+        MenuItem ligar = menu.add("Ligar");
+        ligar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @SuppressWarnings("ResourceType")
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Intent irParaTelaDeDiscagem = new Intent(Intent.ACTION_CALL);
+                Uri discarPara = Uri.parse("tel:" + aluno.getTelefone());
+
+                irParaTelaDeDiscagem.setData(discarPara);
+
+                startActivity(irParaTelaDeDiscagem);
+                return false;
+            }
+        });
+
+
         menu.add("Enviar SMS");
-        menu.add("Navegar no site");
+        MenuItem navegar = menu.add("Navegar no site");
+
+        navegar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Intent irParaOSite = new Intent(Intent.ACTION_VIEW);
+
+                Uri locaSite = Uri.parse("http://" + aluno.getSite());
+                irParaOSite.setData(locaSite);
+
+                startActivity(irParaOSite);
+
+                return false;
+            }
+        });
+
+
         MenuItem deletar = menu.add("Deletar");
+
+        //Customizando evento
         deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
